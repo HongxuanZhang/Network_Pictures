@@ -27,6 +27,12 @@ def check_udp(num01, num02, num03):
 
 
 def distinguish(segment_list, add_in_mistake):
+    """
+
+    :param segment_list:  UDP Segment
+    :param add_in_mistake:  是否引入错误 True of False
+    :return:
+    """
     num_result = 0
     for num in segment_list:
         # 以一个极低的概率使得接收到的数据发生变异！
