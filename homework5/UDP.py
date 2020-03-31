@@ -4,12 +4,17 @@ import random
 num1 = 0B0110011001100000
 num2 = 0B0101010101010101
 num3 = 0B1000111100001100
-udpSeg = [num1, num2, num3]
+udpSegment = [num1, num2, num3]
 
 
-def check_udp_sender(segment_list):
+def udp_sender_add_checksum(segment_list):
+    """
+    计算报文段的checksum
+    :param segment_list:
+    :return:
+    """
     udp_check = complement(check_udp(segment_list[0], segment_list[1], segment_list[2]))
-    udpSeg.append(udp_check)
+    udpSegment.append(udp_check)
     return
 
 
@@ -26,7 +31,7 @@ def check_udp(num01, num02, num03):
     return num04
 
 
-def distinguish(segment_list, add_in_mistake):
+def checksum_judge(segment_list, add_in_mistake):
     """
 
     :param segment_list:  UDP Segment
@@ -36,12 +41,13 @@ def distinguish(segment_list, add_in_mistake):
     num_result = 0
     for num in segment_list:
         # 以一个极低的概率使得接收到的数据发生变异！
+        # 引入错误并不会在图形化结果中显示，只会影响最后的check result图
         if add_in_mistake:
             if random.random() < 0.1:
                 num += 1
         num_result += num
         num_result = num_result % (2 ** 16) + (num_result >> 16)
-    udpSeg.append(num_result)
+    udpSegment.append(num_result)
     return num_result == 2 ** 16 - 1, num_result
 
 
@@ -82,12 +88,12 @@ def draw_use_matplot(segment_list):
 
 
 if __name__ == "__main__":
-    for seg in udpSeg:
+    for seg in udpSegment:
         print(bin(seg))
-    check_udp_sender(udpSeg)
-    distinguish_result = distinguish(udpSeg, True)
-    if distinguish_result[0]:
+    udp_sender_add_checksum(udpSegment)
+    judge_result = checksum_judge(udpSegment, True)  # 修改为False则不会引入错误
+    if judge_result[0]:
         print("nothing wrong")
     else:
         print("mistake occurs")
-    draw_use_matplot(udpSeg)
+    draw_use_matplot(udpSegment)
